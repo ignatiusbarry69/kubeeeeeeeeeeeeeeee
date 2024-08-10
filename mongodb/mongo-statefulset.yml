@@ -1,24 +1,24 @@
 apiVersion: apps/v1           # menentukan versi api
 kind: StatefulSet             # menentukan jenis obj yang dibuat
-metadata:                     # 
-  name: karsajobs-db             # menentukan nama obj
+metadata:                     
+  name: karsajobs-db          # menentukan nama obj
   labels:                     # menentukan label utk objek
-    app: karsajobs-db
+    app: karsajobs-db         # label app harus sesuai dengan Service selector
     tier: db
 spec:                         # menentukan spesifikasi objek statefulset
-  serviceName: karsajobs-db
+  serviceName: karsajobs-db   # nama service yang terkait
   replicas: 1                 # menentukan jumlah replika Pod
   minReadySeconds: 10         # waktu minimum Pod untuk siap, yaitu 10 detik
   selector:                   # mengasosiasikan Pod yang memiliki label tertentu
     matchLabels:
-      app: karsajobs
+      app: karsajobs-db       # label app harus sesuai dengan Service selector
       tier: db
   template:                   # menentukan template pod
-    metadata:                 # ya ini metadata
+    metadata:                 
       labels:                 # menentukan label yg mau dipasang di Pod
-        app: karsajobs
+        app: karsajobs-db     # label app harus sesuai dengan Service selector
         tier: db
-    spec:                     # spesifikasi objek
+    spec:                     
       terminationGracePeriodSeconds: 10 # ya ini sesuai namanya
       containers:             # menentukan spesifikasi container
       - name: mongo           # menentukan nama container

@@ -1,15 +1,15 @@
 apiVersion: v1          # versi api
-kind: Service           # tipe object
-metadata:               # 
+kind: Service           # tipe objek
+metadata:               #
   name: karsajobs-ui    # nama objek service
-  labels:               # label
+  labels:               # label untuk service
     app: karsajobs-ui
-    tier: frontend
-spec:                   # spesifikasi Service yang dibuat
-  type: NodePort        # menggunakan tipe NodePort, agar dapat diakses dari luar Cluster melalui port dari setiap Node
-  selector:             # mengasosiasikan Pod yang memiliki label tertentu
-    app: karsajobs-ui
-    tier: frontend
-  ports:                # spesifikasi port yang diekspos
-  - port: 8000          # port yang di-listen di dalam Cluster
-    nodePort: 30010
+    tier: frontend      # pastikan ini konsisten dengan Deployment
+spec:                   # spesifikasi service
+  type: NodePort        # tipe service untuk akses dari luar cluster
+  selector:             # selector untuk mengasosiasikan Pod
+    app: karsajobs-ui   # pastikan ini konsisten dengan Deployment
+    tier: frontend      # pastikan ini konsisten dengan Deployment
+  ports:                # spesifikasi port yang di-expose
+  - port: 8000          # port dalam cluster
+    nodePort: 30008     # port luar (harus antara 30000-32767)
