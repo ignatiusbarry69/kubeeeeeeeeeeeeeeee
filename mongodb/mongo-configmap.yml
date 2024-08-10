@@ -1,0 +1,8 @@
+apiVersion: v1              # versi api, utk configmap ttp pakai api dasar
+kind: ConfigMap             # jenis objek yg diinginkan 
+metadata:                   # informasi terkait objek yg mau dibuat ini
+  name: mongo-config        # nama objek
+data:                       # informasi terkait bagaimana data dikelola
+  mongo.conf: |
+    storage:
+      dbPath: /data/db      # path ke storage dbnya, harus sesuai sama yg nanti di mau di pake ngemount

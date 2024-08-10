@@ -1,0 +1,28 @@
+apiVersion: apps/v1         # versi api krna deployment pake apps/
+kind: Deployment            #
+metadata:                   # 
+  name: karsajobs-ui        # 
+  labels:                   # laebels as always to label each oobject
+    app: karsajobs-ui
+    tier: fe
+spec:                       # spek yg dimau deploymentnya
+  replicas: 1               # jml replika pod
+  selector:                 # 
+    matchLabels:
+      app: karsajobs-ui
+      tier: fe
+  template:                 # template untuk membuat pod
+    metadata:               # metadata ya metadata
+      labels:               #
+        app: karsajobs-ui
+        tier: fe
+    spec:                   # spek port
+      containers:           # 
+      - name: karsajobs-ui  # nama kontainer di dalam pod
+        image: ghcr.io/ignatiusbarry69/karsajobs-ui:latest # image Docker dr kriteria 2
+        imagePullPolicy: IfNotPresent # uhntuk mengatur pull image policy kpn harus pull
+        ports:              # set port container
+        - containerPort: 8000
+        env:                # mendefinisikan env khususnya untuk endpoint be
+        - name: VUE_APP_BACKEND
+          value: "http://10.101.16.132:30011"

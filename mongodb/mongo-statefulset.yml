@@ -1,0 +1,53 @@
+apiVersion: apps/v1           # menentukan versi api
+kind: StatefulSet             # menentukan jenis obj yang dibuat
+metadata:                     # 
+  name: karsajobs-db             # menentukan nama obj
+  labels:                     # menentukan label utk objek
+    app: karsajobs-db
+    tier: db
+spec:                         # menentukan spesifikasi objek statefulset
+  serviceName: karsajobs-db
+  replicas: 1                 # menentukan jumlah replika Pod
+  minReadySeconds: 10         # waktu minimum Pod untuk siap, yaitu 10 detik
+  selector:                   # mengasosiasikan Pod yang memiliki label tertentu
+    matchLabels:
+      app: karsajobs
+      tier: db
+  template:                   # menentukan template pod
+    metadata:                 # ya ini metadata
+      labels:                 # menentukan label yg mau dipasang di Pod
+        app: karsajobs
+        tier: db
+    spec:                     # spesifikasi objek
+      terminationGracePeriodSeconds: 10 # ya ini sesuai namanya
+      containers:             # menentukan spesifikasi container
+      - name: mongo           # menentukan nama container
+        image: mongo:latest   # menentukan image dan versinya
+        imagePullPolicy: IfNotPresent # menentukan utk pull image dr remote kalau blm ada di repo lokal
+        ports:                # menentukan port yg di containernya
+        - containerPort: 27017
+        env:                  # mendefinisikan env variable
+        - name: MONGO_INITDB_ROOT_USERNAME_FILE
+          value: /etc/mongo-credentials/MONGO_ROOT_USERNAME
+        - name: MONGO_INITDB_ROOT_PASSWORD_FILE
+          value: /etc/mongo-credentials/MONGO_ROOT_PASSWORD
+        volumeMounts:         # menentukan path mounting volum"nya sesuai ketentuan
+        - name: mongo-persist-vol #samakan dgn nama volum
+          mountPath: /data/db
+        - name: mongo-config-vol
+          mountPath: /config
+        - name: mongo-secret-vol
+          mountPath: /etc/mongo-credentials
+      volumes:                # mengatur volume penyimpanan data yang digunakan
+      - name: mongo-persist-vol
+        persistentVolumeClaim:
+          claimName: mongo-pvc # menyesuaikan dr nama objek volum claim yang dibuat
+      - name: mongo-config-vol
+        configMap:
+          name: mongo-config  # menyesuaikan dggn objek configmap yg sudah dibuat
+          items:
+          - key: mongo.conf
+            path: mongo.conf
+      - name: mongo-secret-vol
+        secret:
+          secretName: mongo-secret # menyesuaikan dgn objeck secret yang dibuat

@@ -1,0 +1,14 @@
+apiVersion: v1         # versi Kubernetes API yg mau dipakai
+kind: Service          # jenis objek yg mau dibuat
+metadata:              # informasi terkait objek
+  name: karsajobs-db      # nama objek 
+  labels:              # label yg mau ditempel di service ini
+    app: karsajobs-db  # i realize the label and the name must all be distinct
+    tier: db
+spec:                  # spek dr objec service db
+  selector:            # penentu targeted pod
+    app: karsajobs-db
+    tier: db
+  ports:               # spesifikasi port dr service ini
+  - port: 27017        # open port dalam cluster
+  clusterIP: None      # menandai service ini sebagai headless service

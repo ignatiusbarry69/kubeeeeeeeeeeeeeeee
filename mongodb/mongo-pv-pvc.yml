@@ -1,0 +1,26 @@
+apiVersion: v1               # versi api
+kind: PersistentVolume       # jenis objek
+metadata:                    # metadata ya
+  name: mongo-pv             # nama objek PersistentVolume
+  labels:                    # label untuk objek ini 
+    type: local              # tipe volumenya local
+spec:                        # spesifikasi objek yg dibuat
+  storageClassName: manual   # storageclass di set manual
+  capacity:                  # kapasitas penyimpanan dikasi 1 GB
+    storage: 1Gi
+  accessModes:               # menentukan mode akses hanya bisa dr 1 node dlm 1 waktu
+    - ReadWriteOnce
+  hostPath:                  # lokasi direktori di host
+    path: /mnt/data
+---
+apiVersion: v1               # menentukan versi api
+kind: PersistentVolumeClaim  # menentukan jenis objk
+metadata:                    # menentukan metadata objek
+  name: mongo-pvc            # menentukan nama objek 
+spec:                        # menentukan spek objek
+  accessModes:               # menentukan kriteria mode akses yg dicari 
+    - ReadWriteOnce
+  resources:                 # menentukan kriteria resource yg dicari
+    requests:                # 
+      storage: 1Gi           # 
+  storageClassName: manual

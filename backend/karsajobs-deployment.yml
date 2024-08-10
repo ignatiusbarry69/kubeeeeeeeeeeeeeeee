@@ -1,0 +1,41 @@
+apiVersion: apps/v1   # versi api
+kind: Deployment      # jenis objek
+metadata:
+  name: karsajobs-be
+  labels:
+    app: karsajobs-be
+    tier: be
+spec:
+  replicas: 1 # jml replika pod
+  selector: # set selektor supaya bisa dikenali
+    matchLabels:
+      app: karsajobs-be
+      tier: be
+  template: # set konfigurasi template pod
+    metadata:
+      labels:
+        app: karsajobs-be
+        tier: be
+    spec:
+      containers: # set config container
+      - name: server
+        image: ghcr.io/ignatiusbarry69/karsajobs:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 8080
+        env:
+          - name: APP_PORT
+            value: "8080"
+          - name: MONGO_HOST
+            value: karsajobs-db
+          - name: MONGO_USER
+            valueFrom:
+              secretKeyRef:
+                name: mongo-secret # samakan dengan nama secret object yg dibuat
+                key: MONGO_ROOT_USERNAME # samakan dgn key yg menyimpan root usernam
+
+          - name: MONGO_PASS
+            valueFrom:
+              secretKeyRef:
+                name: mongo-secret
+                key: MONGO_ROOT_PASSWORD # sama seperti username, yg ini ambi passwordnya

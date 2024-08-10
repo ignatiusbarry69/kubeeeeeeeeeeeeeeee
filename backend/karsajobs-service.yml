@@ -1,0 +1,15 @@
+apiVersion: v1       # menentukan versi api
+kind: Service        # menentukan jnis objekk
+metadata:            # 
+  name: karsajobs-be    # menentukan nama objek
+  labels:            # menentukan labelnya
+    app: karsajobs-be
+    tier: be
+spec:
+  ports:
+  - port: 8080       # menentukan port dalem 
+    nodePort: 30011  # menentukan port luar
+  selector:          # ya ini nentuin selector podnya
+    app: karsajobs-be # after i tried to apply the manifest i realize the name and the label should be distinct for each levl BE, FE, DB
+    tier: be
+  type: NodePort     #tipenya pake nodeportsupaya bisa diakses dr luar cluster 
