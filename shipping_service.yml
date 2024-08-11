@@ -1,0 +1,48 @@
+# Menentukan definisi Service untuk shipping-service
+apiVersion: v1                          # Menentukan versi Kubernetes API yang digunakan untuk Service
+kind: Service                           # Menentukan jenis sumber daya yang dibuat adalah Service
+metadata:                               # Menentukan metadata untuk identifikasi objek
+  name: shipping-service                # Menentukan nama Service ini
+  labels:                               # Menentukan label untuk identifikasi
+    app: shipping-service               # Menentukan label 'app' dengan nilai 'shipping-service'
+    tier: consumer                      # Menentukan label 'tier' dengan nilai 'consumer'
+spec:                                   # Menentukan spesifikasi dari Service
+  selector:                             # Menentukan pemilihan Pod berdasarkan label
+    app: shipping-service               # Menentukan pemilihan Pod yang memiliki label 'app: shipping-service'
+    tier: consumer                      # Menentukan pemilihan Pod yang memiliki label 'tier: consumer'
+  ports:                                # Menentukan konfigurasi port untuk Service
+  - name: http-nodejs                   # Menentukan nama port ini adalah http-nodejs
+    port: 3001                          # Menentukan port yang digunakan oleh Service adalah 3001
+
+---
+# Menentukan definisi Deployment untuk shipping-service
+apiVersion: apps/v1                     # Menentukan versi Kubernetes API yang digunakan untuk Deployment
+kind: Deployment                        # Menentukan jenis sumber daya yang dibuat adalah Deployment
+metadata:                               # Menentukan metadata untuk identifikasi objek
+  name: shipping-service                # Menentukan nama Deployment ini
+  labels:                               # Menentukan label untuk identifikasi
+    app: shipping-service               # Menentukan label 'app' dengan nilai 'shipping-service'
+    tier: consumer                      # Menentukan label 'tier' dengan nilai 'consumer'
+spec:                                   # Menentukan spesifikasi dari Deployment
+  replicas: 1                           # Menentukan jumlah replika Pod yang diinginkan adalah 1
+  selector:                             # Menentukan pemilihan Pod berdasarkan label
+    matchLabels:
+      app: shipping-service            # Menentukan pemilihan Pod yang memiliki label 'app: shipping-service'
+      tier: consumer                    # Menentukan pemilihan Pod yang memiliki label 'tier: consumer'
+  template:                             # Menentukan template untuk membuat Pod
+    metadata:                           # Menentukan metadata untuk identifikasi Pod
+      labels:                           # Menentukan label untuk Pod
+        app: shipping-service          # Menentukan label 'app' dengan nilai 'shipping-service'
+        tier: consumer                  # Menentukan label 'tier' dengan nilai 'consumer'
+    spec:                               # Menentukan spesifikasi dari Pod
+      containers:                       # Menentukan daftar kontainer dalam Pod
+      - name: shipping-service          # Menentukan nama kontainer ini adalah shipping-service
+        image: ghcr.io/ignatiusbarry69/shipping-service:latest # Menentukan image Docker yang digunakan
+        ports:                          # Menentukan konfigurasi port untuk kontainer
+        - containerPort: 3001           # Menentukan port yang digunakan oleh kontainer adalah 3001
+        env:                            # Menentukan variabel environment untuk kontainer
+        - name: AMQP_PASSWORD           # Menentukan nama variabel environment adalah AMQP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq           # Menentukan pengambilan nilai dari Secret dengan nama rabbitmq
+              key: rabbitmq-password   # Menentukan pengambilan nilai dari key rabbit

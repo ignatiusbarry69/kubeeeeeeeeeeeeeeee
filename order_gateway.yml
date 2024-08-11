@@ -1,0 +1,36 @@
+# Menentukan konfigurasi Gateway untuk Istio
+apiVersion: networking.istio.io/v1alpha3  # Menentukan versi API yang digunakan untuk Gateway
+kind: Gateway                            # Menentukan jenis sumber daya yang dibuat adalah Gateway
+metadata:                                # Menentukan metadata untuk identifikasi objek
+  name: order-service-gw                 # Menentukan nama Gateway ini
+spec:                                    # Menentukan spesifikasi dari Gateway
+  selector:                              # Menentukan pemilihan gateway yang sesuai dengan label
+    istio: ingressgateway                # Menentukan penggunaan istio ingress gateway
+  servers:                               # Menentukan konfigurasi server untuk Gateway
+  - port:                                # Menentukan konfigurasi port untuk server
+      number: 80                        # Menentukan port yang digunakan adalah 80
+      name: http                        # Menentukan nama port ini adalah http
+      protocol: HTTP                     # Menentukan protokol yang digunakan adalah HTTP
+    hosts:                               # Menentukan daftar host yang diizinkan
+    - "*"                                # Menentukan izin akses dari semua host
+
+---
+# Menentukan konfigurasi VirtualService untuk Istio
+apiVersion: networking.istio.io/v1alpha3  # Menentukan versi API yang digunakan untuk VirtualService
+kind: VirtualService                       # Menentukan jenis sumber daya yang dibuat adalah VirtualService
+metadata:                                # Menentukan metadata untuk identifikasi objek
+  name: order-service-vs                 # Menentukan nama VirtualService ini
+spec:                                    # Menentukan spesifikasi dari VirtualService
+  hosts:                                 # Menentukan host yang menerima permintaan
+  - "*"                                   # Menentukan izin dari semua host
+  gateways:                              # Menentukan pengaitan dengan Gateway yang telah didefinisikan
+  - order-service-gw                     # Menentukan penggunaan Gateway yang bernama order-service-gw
+  http:                                  # Menentukan konfigurasi rute HTTP
+  - match:                               # Menentukan pemetaan rute berdasarkan URI
+    - uri:
+        exact: /order                    # Menentukan URI yang harus cocok dengan '/order'
+    route:                               # Menentukan konfigurasi rute untuk permintaan yang cocok
+    - destination:                       # Menentukan tujuan dari rute
+        host: order-service             # Menentukan pengalihan ke service dengan nama order-service
+        port:
+          number: 3000                  # Menentukan port pada service tujuan adalah 3000

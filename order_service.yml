@@ -1,0 +1,50 @@
+# Menentukan definisi Service untuk order-service
+apiVersion: v1                          # Menentukan versi Kubernetes API yang digunakan untuk Service
+kind: Service                           # Menentukan jenis sumber daya yang dibuat adalah Service
+metadata:                               # Menentukan metadata untuk identifikasi objek
+  name: order-service                   # Menentukan nama Service ini
+  labels:                               # Menentukan label untuk identifikasi
+    app: order-service                  # Menentukan label 'app' dengan nilai 'order-service'
+    tier: producer                      # Menentukan label 'tier' dengan nilai 'producer'
+spec:                                   # Menentukan spesifikasi dari Service
+  selector:                             # Menentukan pemilihan Pod berdasarkan label
+    app: order-service                  # Menentukan pemilihan Pod yang memiliki label 'app: order-service'
+    tier: producer                      # Menentukan pemilihan Pod yang memiliki label 'tier: producer'
+  ports:                                # Menentukan konfigurasi port untuk Service
+  - name: http-nodejs                   # Menentukan nama port ini adalah http-nodejs
+    port: 3000                          # Menentukan port yang digunakan oleh Service adalah 3000
+
+---
+# Menentukan definisi Deployment untuk order-service
+apiVersion: apps/v1                     # Menentukan versi Kubernetes API yang digunakan untuk Deployment
+kind: Deployment                        # Menentukan jenis sumber daya yang dibuat adalah Deployment
+metadata:                               # Menentukan metadata untuk identifikasi objek
+  name: order-service                   # Menentukan nama Deployment ini
+  labels:                               # Menentukan label untuk identifikasi
+    app: order-service                  # Menentukan label 'app' dengan nilai 'order-service'
+    tier: producer                      # Menentukan label 'tier' dengan nilai 'producer'
+spec:                                   # Menentukan spesifikasi dari Deployment
+  replicas: 1                           # Menentukan jumlah replika Pod yang diinginkan adalah 1
+  selector:                             # Menentukan pemilihan Pod berdasarkan label
+    matchLabels:
+      app: order-service                # Menentukan pemilihan Pod yang memiliki label 'app: order-service'
+      tier: producer                    # Menentukan pemilihan Pod yang memiliki label 'tier: producer'
+  template:                             # Menentukan template untuk membuat Pod
+    metadata:                           # Menentukan metadata untuk identifikasi Pod
+      labels:                           # Menentukan label untuk Pod
+        app: order-service              # Menentukan label 'app' dengan nilai 'order-service'
+        tier: producer                  # Menentukan label 'tier' dengan nilai 'producer'
+    spec:                               # Menentukan spesifikasi dari Pod
+      containers:                       # Menentukan daftar kontainer dalam Pod
+      - name: order-service             # Menentukan nama kontainer ini adalah order-service
+        image: ghcr.io/ignatiusbarry69/order-service:latest # Menentukan image Docker yang digunakan
+        ports:                          # Menentukan konfigurasi port untuk kontainer
+        - containerPort: 3000           # Menentukan port yang digunakan oleh kontainer adalah 3000
+        env:                            # Menentukan variabel environment untuk kontainer
+        - name: AMQP_PASSWORD           # Menentukan nama variabel environment adalah AMQP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq           # Menentukan pengambilan nilai dari Secret dengan nama rabbitmq
+              key: rabbitmq-password   # Menentukan pengambilan nilai dari key rabbitmq-password
+        - name: AMQP_URL                # Menentukan nama variabel environment adalah AMQP_URL
+          value: "amqp://user:$(AMQP_PASSWORD)@rabbitmq.default.svc.cluster.local:5672/" # Menentukan URL RabbitMQ
