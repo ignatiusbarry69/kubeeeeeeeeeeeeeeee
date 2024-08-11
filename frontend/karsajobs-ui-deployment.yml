@@ -1,28 +1,28 @@
 apiVersion: apps/v1         # versi api karena deployment menggunakan apps/
 kind: Deployment            #
 metadata:                   #
-  name: karsajobs-ui        # nama objek deployment
+  name: karsajobs-fe        # nama objek deployment
   labels:                   # label untuk deployment
-    app: karsajobs-ui
-    tier: frontend          # pastikan label ini konsisten dengan Service
+    app: karsajobs-fe
+    tier: fe                # pastikan label ini konsisten dengan Service
 spec:                       # spesifikasi deployment
   replicas: 1               # jumlah replika pod
   selector:                 # selector untuk mencocokkan dengan label pod
     matchLabels:
-      app: karsajobs-ui
-      tier: frontend        # pastikan ini konsisten dengan label di Service
+      app: karsajobs-fe
+      tier: fe              # pastikan ini konsisten dengan label di Service
   template:                 # template untuk membuat pod
     metadata:               # metadata untuk pod
       labels:               # label untuk pod
-        app: karsajobs-ui
-        tier: frontend      # pastikan ini konsisten dengan label di Service
+        app: karsajobs-fe
+        tier: fe            # pastikan ini konsisten dengan label di Service
     spec:                   # spesifikasi container
       containers:           # daftar container dalam pod
-      - name: karsajobs-ui  # nama container
+      - name: karsajobs-fe  # nama container
         image: ghcr.io/ignatiusbarry69/karsajobs-ui:latest # image Docker
         imagePullPolicy: IfNotPresent # policy untuk menarik image
         ports:              # port yang di-expose di container
         - containerPort: 8000
         env:                # environment variables
         - name: VUE_APP_BACKEND
-          value: "http://karsajobs-be:8080" # menggunakan nama service backend, bukan IP hardcoded
+          value: "http://karsajobs-be:8080" # mending pake nama service backend, bukan IP hardcoded
